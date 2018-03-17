@@ -133,10 +133,9 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     type_handler_version    = "2.0"
     settings                = <<SETTINGS
         {
-          "commandToExecute": "bash bootstrap.sh",
+          "commandToExecute": "cmd",
           "fileUris": [
-            "https://kirilstoragetest.blob.core.windows.net/vm-scripts-files/vm_scripts.tar.gz",
-            "https://kirilstoragetest.blob.core.windows.net/vm-scripts-files/bootstrap.sh"
+            "https://<storagename>.blob.core.windows.net/<file>"
           ]
         }
       SETTINGS
