@@ -99,3 +99,13 @@ ENV/
 
 # mypy
 .mypy_cache/
+.DS_STORE
+.vscode/
+*.pyc
+terraform/.terraform/
+terraform/*.tfstate*
+vm_scripts.tar.gz
+services/CertificateGeneration/.vs
+services/CertificateGeneration/packages
+services/CertificateGeneration/CertificateGeneration/bin
+services/CertificateGeneration/CertificateGeneration/obj

@@ -1,0 +1,17 @@
+version: '3'
+services:
+  generator:
+    container_name: generator
+    build: ./docker-files/python27
+    command: bash -c "python /usr/src/scripts/generate_root_certificates.py && 
+                      python /usr/src/scripts/generate_vm_certs.py --vms-config "/usr/src/scripts/vm_names.json" --intermediate-cert intermediate_ca.pem --intermediate-key intermediate_ca.key"
+    volumes:
+      - ./scripts:/usr/src/scripts
+
+  worker:
+    container_name: worker
+    build: ./docker-files/python27
+    hostname: $WORKER_VM_HOSTNAME
+    command: python /usr/src/scripts/download_certificate.py
+    volumes:
+      - ./scripts:/usr/src/scripts
