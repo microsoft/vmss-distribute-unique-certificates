@@ -134,7 +134,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 packages/
-packages.config
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -143,7 +142,6 @@ packages.config
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/
-AssemblyInfo.cs
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
