@@ -17,17 +17,25 @@ Config is located in ~/build/config.py. Config values must be updated with your 
 
 ### Azure subscription config
 
-1. Create a new [Azure Service Principal](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal)
+1. Create a new [Azure Service Principal]
+    a. Go to Active Directory --> App Registrationsb. 
+    b. Follow the "Create an Azure Active Directory application" on the second half of the following web page: (https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal)
 2. Create a new Azure KeyVault
-3. Open ~/build/config.py in an editor
-4. Replace values of the config properties with the Azure resource values you created above
+    a. Add the Service Principal created in step 1 to the Key Vault's access policies
+3. Open ~/scripts/config.py in an editor
+4. Replace values of the config properties with the SPN APP ID and key secret you created above
 
 ### Storage account config
 
 1. Create a new Azure storage account
 2. Create a new SAS token for access to the storage account
-3. Open ~/scripts/config.py in an editor
+3. Open ~/build/config.py in an editor
 4. Replace values of storage account config properties with your storage account
+
+### Copy scripts to storage account
+
+cd <root>
+python ./build/build.py
 
 ### Terraform config
 
@@ -43,14 +51,14 @@ cd <root>
 2. Build the docker image
 
 ```
-Docker-compose build
+docker-compose build
 ```
 
 3. Update ~/scripts/vm-names.json with VM names you're going to provision
 4. Create root\intermediate CAs & certs for all your VMs & uploads it to KV
 
 ```
-Docker-compose up generator
+docker-compose up generator
 ```
 
 5. Initialize Terraform
@@ -65,6 +73,7 @@ terraform init
 ```
 terraform apply
 ```
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
