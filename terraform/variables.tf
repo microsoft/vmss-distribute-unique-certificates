@@ -1,10 +1,18 @@
-variable "subscription_id" {}
+variable "subscription_id" {
+  default = ""
+}
 
-variable "client_id" {}
+variable "client_id" {
+  default = ""
+}
 
-variable "client_secret" {}
+variable "client_secret" {
+  default = ""
+}
 
-variable "tenant_id" {}
+variable "tenant_id" {
+  default = ""
+}
 
 variable "resource_group_name" {
   description = "The name of the resource group in which to create the virtual network."
@@ -25,7 +33,9 @@ variable "storage_replication_type" {
   default     = "LRS"
 }
 
-variable "hostname" {}
+variable "hostname" {
+  default = ""
+}
 
 variable "vm_sku" {
   default = "Standard_A1"
@@ -52,6 +62,10 @@ variable "instance_count" {
   default     = "5"
 }
 
-variable "admin_username" {}
+variable "admin_username" {
+  default = ""
+}
 
-variable "admin_password" {}
+variable "admin_password" {
+  default = ""
+}
