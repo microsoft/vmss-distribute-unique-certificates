@@ -11,6 +11,7 @@ variable "client_secret" {
 }
 
 variable "tenant_id" {
+  description = "Active Directory 'Directory ID' property."
   default = ""
 }
 
@@ -55,7 +56,9 @@ variable "image_offer" {
   default     = "CentOS"
 }
 
-variable "vmss_name_prefix" {}
+variable "vmss_name_prefix" {
+  default = ""
+}
 
 variable "instance_count" {
   description = "Number of VM instances (100 or less)."
