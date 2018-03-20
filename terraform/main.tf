@@ -147,10 +147,9 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     type_handler_version    = "2.0"
     settings                = <<SETTINGS
         {
-         "commandToExecute": "bash bootstrap.sh",
+         "commandToExecute": "cmd",
           "fileUris": [
-            "https://baccertificates.blob.core.windows.net/vm-scripts-files/vm_scripts.tar.gz",
-            "https://baccertificates.blob.core.windows.net/vm-scripts-files/bootstrap.sh"
+            "https://<storagename>.blob.core.windows.net/vm-scripts-files/vm_scripts.tar.gz",
           ]
         }
       SETTINGS
@@ -160,9 +159,9 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
 
 resource "azurerm_key_vault" "kv" {
   depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
-  name                = "<key vault name"
+  name                = "bacKV"
   location            = "${var.location}"
-  resource_group_name = "<key vault RG>"
+  resource_group_name = "bac-certificates-rg"
 
   sku {
     name = "standard"
@@ -175,8 +174,9 @@ resource "azurerm_key_vault" "kv" {
     object_id = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
 
     key_permissions = [
-
+      
     ]
+
     secret_permissions = [
       "get",
     ]
