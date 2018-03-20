@@ -19,9 +19,16 @@ using Org.BouncyCastle.X509;
 
 namespace CertificateGeneration.Wrappers
 {
-    public class CertificatesWrapper
+    public interface ICertificatesWrapper
     {
-        public static X509Certificate2 GenerateCertificate(string subjectName, X509Certificate2 ca = null, int keyStrength = 2048)
+        X509Certificate2 GenerateCertificate(string subjectName, X509Certificate2 ca = null, int keyStrength = 2048);
+        string ExportToPEM(X509Certificate2 cert);
+        string ExportToPfx(X509Certificate2 cert);
+    }
+
+    public class CertificatesWrapper : ICertificatesWrapper
+    {
+        public X509Certificate2 GenerateCertificate(string subjectName, X509Certificate2 ca = null, int keyStrength = 2048)
         {
             // Generating Random Numbers
             var random = new SecureRandom(new CryptoApiRandomGenerator());
@@ -83,7 +90,7 @@ namespace CertificateGeneration.Wrappers
             return x509;
         }
 
-        public static string ExportToPEM(X509Certificate2 cert)
+        public string ExportToPEM(X509Certificate2 cert)
         {
             StringBuilder builder = new StringBuilder();
 
@@ -94,5 +101,9 @@ namespace CertificateGeneration.Wrappers
             return builder.ToString();
         }
 
+        public string ExportToPfx(X509Certificate2 cert)
+        {
+            return Convert.ToBase64String(cert.Export(X509ContentType.Pfx));
+        }
     }
 }
