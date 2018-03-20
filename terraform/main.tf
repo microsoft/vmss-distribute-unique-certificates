@@ -90,6 +90,20 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     capacity = "${var.instance_count}"
   }
 
+  identity {
+    type     = "systemAssigned"
+  }
+
+  extension {
+    name                       = "MSILinuxExtension"
+    publisher                  = "Microsoft.ManagedIdentity"
+    type                       = "ManagedIdentityExtensionForLinux"
+    type_handler_version       = "1.0"
+    auto_upgrade_minor_version = true
+    settings                   = "{\"port\": 50342}"
+    protected_settings         = "{}"
+  }
+
   os_profile {
     computer_name_prefix = "${var.vmss_name_prefix}"
     admin_username       = "${var.admin_username}"
