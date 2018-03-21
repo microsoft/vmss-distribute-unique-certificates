@@ -3,14 +3,14 @@ using CertificateGeneration.Controllers;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
+using Microsoft.AspNetCore.Mvc;
 using CertificateGeneration.Wrappers;
 using Moq;
 
 namespace CertificateGenerationTests.Controllers
 {
     [TestClass()]
-    public class DefaultControllerTests
+    public class CertificatesControllerTests
     {
         private static IKVWrapper KvWrapper { get; set; }
         private static ICertificatesWrapper CertificatesWrapper { get; set; }
@@ -52,7 +52,7 @@ namespace CertificateGenerationTests.Controllers
         public async Task GenerateCertificatesAsync_ValidRequestEmptyIssuerReturnsOk()
         {
             // arrange
-            var defaultController = new DefaultController(KvWrapper, CertificatesWrapper);
+            var certificatesController = new CertificatesController(KvWrapper, CertificatesWrapper);
             var request = new CertificatesRequest()
             {
                 IssuerBase64Pfx = "",
@@ -66,17 +66,17 @@ namespace CertificateGenerationTests.Controllers
             };
 
             // act
-            var result = await defaultController.GenerateCertificatesAsync(request);
+            var result = await certificatesController.GenerateCertificatesAsync(request);
 
             // assert
-            Assert.IsInstanceOfType(result, typeof(OkNegotiatedContentResult<List<ResultJson>>));
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
 
         [TestMethod()]
         public async Task GenerateCertificatesAsync_ValidRequestNullIssuerReturnsOk()
         {
             // arrange
-            var defaultController = new DefaultController(KvWrapper, CertificatesWrapper);
+            var certificatesController = new CertificatesController(KvWrapper, CertificatesWrapper);
             var request = new CertificatesRequest()
             {
                 IssuerBase64Pfx = null,
@@ -90,20 +90,20 @@ namespace CertificateGenerationTests.Controllers
             };
 
             // act
-            var result = await defaultController.GenerateCertificatesAsync(request);
+            var result = await certificatesController.GenerateCertificatesAsync(request);
 
             // assert
-            Assert.IsInstanceOfType(result, typeof(OkNegotiatedContentResult<List<ResultJson>>));
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
 
         [TestMethod()]
         public async Task GenerateCertificatesAsync_NullRequestBodyReturnsBadRequest()
         {
             // arrange
-            var defaultController = new DefaultController(KvWrapper, CertificatesWrapper);
+            var certificatesController = new CertificatesController(KvWrapper, CertificatesWrapper);
 
             // act
-            var result = await defaultController.GenerateCertificatesAsync(null);
+            var result = await certificatesController.GenerateCertificatesAsync(null);
 
             // assert
             Assert.IsInstanceOfType(result, typeof(BadRequestResult));
@@ -113,10 +113,10 @@ namespace CertificateGenerationTests.Controllers
         public async Task GenerateCertificatesAsync_EmptyRequestBodyReturnsBadRequest()
         {
             // arrange
-            var defaultController = new DefaultController(KvWrapper, CertificatesWrapper);
+            var certificatesController = new CertificatesController(KvWrapper, CertificatesWrapper);
 
             // act
-            var result = await defaultController.GenerateCertificatesAsync(new CertificatesRequest());
+            var result = await certificatesController.GenerateCertificatesAsync(new CertificatesRequest());
 
             // assert
             Assert.IsInstanceOfType(result, typeof(BadRequestResult));
@@ -126,7 +126,7 @@ namespace CertificateGenerationTests.Controllers
         public async Task GenerateCertificatesAsync_BadIssuerReturnsInternalServerError()
         {
             // arrange
-            var defaultController = new DefaultController(KvWrapper, CertificatesWrapper);
+            var certificatesController = new CertificatesController(KvWrapper, CertificatesWrapper);
             var request = new CertificatesRequest()
             {
                 IssuerBase64Pfx = "hello bob",
@@ -140,10 +140,10 @@ namespace CertificateGenerationTests.Controllers
             };
 
             // act
-            var result = await defaultController.GenerateCertificatesAsync(request);
+            var result = await certificatesController.GenerateCertificatesAsync(request);
 
             // assert
-            Assert.IsInstanceOfType(result, typeof(InternalServerErrorResult));
+            Assert.IsInstanceOfType(result, typeof(StatusCodeResult));
         }
     }
 }
