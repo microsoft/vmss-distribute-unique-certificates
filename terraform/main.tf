@@ -157,11 +157,11 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
 }
 
 
-resource "azurerm_key_vault" "kv" {
+resource "azurerm_key_vault" "kv" {yes
   depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
-  name                = "bacKV"
+  name                = "<KV name>"
   location            = "${var.location}"
-  resource_group_name = "bac-certificates-rg"
+  resource_group_name = "<KV RG>"
 
   sku {
     name = "standard"
@@ -176,7 +176,7 @@ resource "azurerm_key_vault" "kv" {
     key_permissions = [
       
     ]
-
+    
     secret_permissions = [
       "get",
     ]
