@@ -147,7 +147,7 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     type_handler_version    = "2.0"
     settings                = <<SETTINGS
         {
-         "commandToExecute": "cmd",
+          "commandToExecute": "cmd",
           "fileUris": [
             "https://<storagename>.blob.core.windows.net/<file>",
           ]
