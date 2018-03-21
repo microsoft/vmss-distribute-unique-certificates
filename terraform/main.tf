@@ -147,12 +147,38 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     type_handler_version    = "2.0"
     settings                = <<SETTINGS
         {
-          "commandToExecute": "cmd",
+         "commandToExecute": "cmd",
           "fileUris": [
-            "https://<storagename>.blob.core.windows.net/<file>"
+            "https://<storagename>.blob.core.windows.net/<file>",
           ]
         }
       SETTINGS
   }
+}
 
+
+resource "azurerm_key_vault" "kv" {
+  depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
+  name                = "<KV name>"
+  location            = "${var.location}"
+  resource_group_name = "<KV RG>"
+
+  sku {
+    name = "standard"
+  }
+
+  tenant_id = "${var.tenant_id}"
+
+  access_policy {
+    tenant_id = "${var.tenant_id}"
+    object_id = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
+
+    key_permissions = [
+      
+    ]
+
+    secret_permissions = [
+      "get",
+    ]
+  }
 }
