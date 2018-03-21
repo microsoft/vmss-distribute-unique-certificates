@@ -176,7 +176,7 @@ resource "azurerm_key_vault" "kv" {
     key_permissions = [
       
     ]
-    
+
     secret_permissions = [
       "get",
     ]
