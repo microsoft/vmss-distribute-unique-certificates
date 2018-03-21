@@ -1,15 +1,19 @@
 from azure.keyvault import KeyVaultClient
 from azure.common.credentials import ServicePrincipalCredentials
+from msrestazure.azure_active_directory import MSIAuthentication
 
 import base64
 from OpenSSL import crypto
 
 class KeyVaultWrapper(object):
-    def __init__(self, client_id, secret, tenant_id):
-        credentials = ServicePrincipalCredentials(
-                                    client_id = client_id,
-                                    secret = secret,
-                                    tenant = tenant_id)
+    def __init__(self, client_id = None, secret = None, tenant_id = None):
+        if client_id != None and secret != None and tenant_id != None:
+            credentials = ServicePrincipalCredentials(
+                                        client_id = client_id,
+                                        secret = secret,
+                                        tenant = tenant_id)
+        else:
+            credentials = MSIAuthentication(resource='https://vault.azure.net')
         self.kvclient = KeyVaultClient(credentials)
 
     def upload_secret(self, vault_uri, secret_name, filename):
