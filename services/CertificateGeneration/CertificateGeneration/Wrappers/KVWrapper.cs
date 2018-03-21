@@ -6,7 +6,13 @@ using Microsoft.Azure.KeyVault;
 
 namespace CertificateGeneration.Wrappers
 {
-    public class KVWrapper
+    public interface IKVWrapper
+    {
+        Task UploadPem(string vaultBaseUrl, string secretName, string pem);
+        Task UploadPfx(string vaultBaseUrl, string certificateName, string base64EncodedCertificate);
+    }
+
+    public class KVWrapper : IKVWrapper
     {
         public KVWrapper()
         {

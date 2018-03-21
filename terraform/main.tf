@@ -90,6 +90,20 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     capacity = "${var.instance_count}"
   }
 
+  identity {
+    type     = "systemAssigned"
+  }
+
+  extension {
+    name                       = "MSILinuxExtension"
+    publisher                  = "Microsoft.ManagedIdentity"
+    type                       = "ManagedIdentityExtensionForLinux"
+    type_handler_version       = "1.0"
+    auto_upgrade_minor_version = true
+    settings                   = "{\"port\": 50342}"
+    protected_settings         = "{}"
+  }
+
   os_profile {
     computer_name_prefix = "${var.vmss_name_prefix}"
     admin_username       = "${var.admin_username}"
@@ -135,10 +149,36 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
         {
           "commandToExecute": "cmd",
           "fileUris": [
-            "https://<storagename>.blob.core.windows.net/<file>"
+            "https://<storagename>.blob.core.windows.net/<file>",
           ]
         }
       SETTINGS
   }
+}
 
+
+resource "azurerm_key_vault" "kv" {
+  depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
+  name                = "<KV name>"
+  location            = "${var.location}"
+  resource_group_name = "<KV RG>"
+
+  sku {
+    name = "standard"
+  }
+
+  tenant_id = "${var.tenant_id}"
+
+  access_policy {
+    tenant_id = "${var.tenant_id}"
+    object_id = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
+
+    key_permissions = [
+      
+    ]
+    
+    secret_permissions = [
+      "get",
+    ]
+  }
 }

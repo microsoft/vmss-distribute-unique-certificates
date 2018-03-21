@@ -31,53 +31,90 @@ namespace CertificateGeneration.Controllers
 
     public class DefaultController : ApiController
     {
-        [HttpPost]
-        public async Task<IHttpActionResult> GenerateCertificates([FromBody] CertificatesRequest request)
+        private IKVWrapper KvWrapper { get; set; }
+        private ICertificatesWrapper CertificatesWrapper { get; set; }
+
+        public DefaultController()
         {
-            X509Certificate2 issuerX509 = request.IssuerBase64Pfx != "" ?
-                                             new X509Certificate2(Convert.FromBase64String(request.IssuerBase64Pfx), "", X509KeyStorageFlags.Exportable) :
-                                             null;
-            KVWrapper wrapper = new KVWrapper();
-
-            var tasks = new List<Task<ResultJson>>();
-            foreach (var properties in request.CertificatesProperties)
-            {
-                tasks.Add(GenerateCertificate(wrapper, properties, request.VaultBaseUrl, issuerX509));
-            }
-
-            await Task.WhenAll(tasks);
-
-            var result = new List<ResultJson>();
-            foreach (var task in tasks)
-            {
-                result.Add(task.Result);
-            }
-            return Ok(result);
+            KvWrapper = new KVWrapper();
+            CertificatesWrapper = new CertificatesWrapper();
         }
 
-        private async Task<ResultJson> GenerateCertificate(KVWrapper wrapper, CertificateProperties properties, string vaultBaseUrl, X509Certificate2 issuerX509)
+        public DefaultController(IKVWrapper kvWrapper, ICertificatesWrapper certificatesWrapper)
+        {
+            KvWrapper = kvWrapper;
+            CertificatesWrapper = certificatesWrapper;
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> GenerateCertificatesAsync([FromBody] CertificatesRequest request)
+        {
+            // validate that we received a valid CertificatesRequest request body
+            if (string.IsNullOrWhiteSpace(request?.VaultBaseUrl) 
+                || request.CertificatesProperties == null 
+                || request.CertificatesProperties.Length == 0)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                X509Certificate2 issuerX509 = ! string.IsNullOrWhiteSpace(request.IssuerBase64Pfx)
+                    ? new X509Certificate2(Convert.FromBase64String(request.IssuerBase64Pfx), "",
+                        X509KeyStorageFlags.Exportable)
+                    : null;
+
+                var tasks = new List<Task<ResultJson>>();
+                foreach (var properties in request.CertificatesProperties)
+                {
+                    tasks.Add(GenerateCertificateAsync(properties, request.VaultBaseUrl, issuerX509));
+                }
+
+                await Task.WhenAll(tasks);
+
+                var result = new List<ResultJson>();
+                foreach (var task in tasks)
+                {
+                    result.Add(task.Result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception exception)
+            {
+                //TODO: log exception
+                Console.WriteLine(exception.Message);
+                return InternalServerError();
+            }
+        }
+
+        private async Task<ResultJson> GenerateCertificateAsync(CertificateProperties properties, string vaultBaseUrl, X509Certificate2 issuerX509)
         {
             var result = new ResultJson();
             try
             {
                 var x = CertificatesWrapper.GenerateCertificate(properties.SubjectName, issuerX509);
-                result.pfx = Convert.ToBase64String(x.Export(X509ContentType.Pfx));
+                result.pfx = CertificatesWrapper.ExportToPfx(x);
 
                 if (properties.CertificateName != "")
                 {
-                    await wrapper.UploadPfx(vaultBaseUrl, properties.CertificateName, result.pfx);
+                    await KvWrapper.UploadPfx(vaultBaseUrl, properties.CertificateName, result.pfx);
                 }
 
                 if (properties.SecretName != "")
                 {
-                    await wrapper.UploadPem(vaultBaseUrl, properties.SecretName, CertificatesWrapper.ExportToPEM(x));
+                    await KvWrapper.UploadPem(vaultBaseUrl, properties.SecretName, CertificatesWrapper.ExportToPEM(x));
                 }
+
                 result.result = "Success";
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                result.result = e.Message;
+                //TODO: log exception
+                Console.WriteLine(exception);
+                throw;
             }
+
             return result;
         }
     }
