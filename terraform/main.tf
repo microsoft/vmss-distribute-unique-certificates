@@ -157,7 +157,7 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
 }
 
 
-resource "azurerm_key_vault" "kv" {yes
+resource "azurerm_key_vault" "kv" {
   depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
   name                = "<KV name>"
   location            = "${var.location}"
