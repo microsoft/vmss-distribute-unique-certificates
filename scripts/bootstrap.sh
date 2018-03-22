@@ -7,4 +7,4 @@ pip install pyopenssl
 
 tar -xzf vm_scripts.tar.gz
 cd scripts
-python download_certificate.py
+python download_certificate.py &
