@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 
@@ -28,26 +28,20 @@ namespace CertificateGeneration.Controllers
         public string result { get; set; }
     }
 
-
-    public class DefaultController : ApiController
+    [Route("api/[controller]")]
+    public class CertificatesController : Controller
     {
         private IKVWrapper KvWrapper { get; set; }
         private ICertificatesWrapper CertificatesWrapper { get; set; }
 
-        public DefaultController()
-        {
-            KvWrapper = new KVWrapper();
-            CertificatesWrapper = new CertificatesWrapper();
-        }
-
-        public DefaultController(IKVWrapper kvWrapper, ICertificatesWrapper certificatesWrapper)
+        public CertificatesController(IKVWrapper kvWrapper, ICertificatesWrapper certificatesWrapper)
         {
             KvWrapper = kvWrapper;
             CertificatesWrapper = certificatesWrapper;
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> GenerateCertificatesAsync([FromBody] CertificatesRequest request)
+        public async Task<IActionResult> GenerateCertificatesAsync([FromBody] CertificatesRequest request)
         {
             // validate that we received a valid CertificatesRequest request body
             if (string.IsNullOrWhiteSpace(request?.VaultBaseUrl) 
@@ -84,7 +78,7 @@ namespace CertificateGeneration.Controllers
             {
                 //TODO: log exception
                 Console.WriteLine(exception.Message);
-                return InternalServerError();
+                return StatusCode(500);
             }
         }
 
