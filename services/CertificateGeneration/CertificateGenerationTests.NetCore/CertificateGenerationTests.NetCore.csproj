@@ -21,7 +21,4 @@
   <ItemGroup>
     <ProjectReference Include="..\CertificateGeneration.NetCore\CertificateGeneration.NetCore.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="UnitTest1.cs" />
-  </ItemGroup>
 </Project>

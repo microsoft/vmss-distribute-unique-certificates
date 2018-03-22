@@ -103,15 +103,8 @@ namespace CertificateGeneration.Wrappers
             );
             /* RsaPrivateKeyStructure parameter mapping description found here: https://github.com/neoeinstein/bouncycastle/blob/00ccedf8f4537a8621944f3072453e4603d09c4b/crypto/src/asn1/pkcs/RSAPrivateKeyStructure.cs#L101 */
 
-            try
-            {
-                var privateKey = BouncyCastleUtilities.ToRSA(keyparams);
-                x509 = x509.CopyWithPrivateKey(privateKey);
-            }
-            catch(Exception e) 
-            {
-                Console.WriteLine(e); 
-            }
+            var privateKey = BouncyCastleUtilities.ToRSA(keyparams);
+            x509 = x509.CopyWithPrivateKey(privateKey);
 
             return x509;
         }
