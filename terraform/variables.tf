@@ -68,13 +68,8 @@ variable "storage_replication_type" {
   default     = "LRS"
 }
 
-<<<<<<< HEAD
 variable "vmss_prefix" {
   default = "vmss-certs"
-=======
-variable "hostname" {
-  default = ""
->>>>>>> 6c78ea9cb7a0811ca1a1c481c5011ccc15d95f58
 }
 
 variable "vm_sku" {
@@ -95,20 +90,12 @@ variable "image_offer" {
   default     = "CentOS"
 }
 
-<<<<<<< HEAD
-=======
-variable "vmss_name_prefix" {
-  default = ""
-}
-
->>>>>>> 6c78ea9cb7a0811ca1a1c481c5011ccc15d95f58
 variable "instance_count" {
   description = "Number of VM instances (100 or less)."
   default     = "5"
 }
 
 variable "admin_username" {
-<<<<<<< HEAD
   default = "jeff"
 }
 
@@ -127,11 +114,3 @@ variable "file1" {
 variable "file2" {
   default = "https://baccertificates.blob.core.windows.net/vm-scripts-files/vm_scripts.tar.gz"
 }
-=======
-  default = ""
-}
-
-variable "admin_password" {
-  default = ""
-}
->>>>>>> 6c78ea9cb7a0811ca1a1c481c5011ccc15d95f58
