@@ -5,6 +5,14 @@ provider "azurerm" {
   tenant_id       = "${var.tenant_id}"
 }
     
+provider "azurerm" {
+  alias           = "key_vault_subscription"
+  subscription_id = "${var.key_vault_subscription_id}"
+  client_id       = "${var.key_vault_client_id}"
+  client_secret   = "${var.key_vault_client_secret}"
+  tenant_id       = "${var.key_vault_tenant_id}"
+}
+    
 resource "azurerm_resource_group" "rg" {
   name     = "${var.resource_group_name}"
   location = "${var.location}"
@@ -25,11 +33,11 @@ resource "azurerm_subnet" "subnet" {
 }
 
 resource "azurerm_public_ip" "pip" {
-  name                         = "${var.hostname}-pip"
+  name                         = "${var.vmss_prefix}-pip"
   location                     = "${azurerm_resource_group.rg.location}"
   resource_group_name          = "${azurerm_resource_group.rg.name}"
   public_ip_address_allocation = "Dynamic"
-  domain_name_label            = "${var.hostname}"
+  domain_name_label            = "${var.vmss_prefix}"
 }
 
 resource "azurerm_lb" "lb" {
@@ -61,8 +69,8 @@ resource "azurerm_lb_nat_pool" "np" {
   frontend_ip_configuration_name = "LBFrontEnd"
 }
 
-resource "azurerm_storage_account" "stor" {
-  name                     = "${var.resource_group_name}stor"
+resource "azurerm_storage_account" "store" {
+  name                     = "${var.resource_group_name}store"
   location                 = "${azurerm_resource_group.rg.location}"
   resource_group_name      = "${azurerm_resource_group.rg.name}"
   account_tier             = "${var.storage_account_tier}"
@@ -72,12 +80,12 @@ resource "azurerm_storage_account" "stor" {
 resource "azurerm_storage_container" "vhds" {
   name                  = "vhds"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
-  storage_account_name  = "${azurerm_storage_account.stor.name}"
+  storage_account_name  = "${azurerm_storage_account.store.name}"
   container_access_type = "blob"
 }
 
 resource "azurerm_virtual_machine_scale_set" "scaleset" {
-  name                = "autoscalewad"
+  name                = "vmscaleset"
   location            = "${azurerm_resource_group.rg.location}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
   upgrade_policy_mode = "Manual"
@@ -99,13 +107,11 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     publisher                  = "Microsoft.ManagedIdentity"
     type                       = "ManagedIdentityExtensionForLinux"
     type_handler_version       = "1.0"
-    auto_upgrade_minor_version = true
     settings                   = "{\"port\": 50342}"
-    protected_settings         = "{}"
   }
 
   os_profile {
-    computer_name_prefix = "${var.vmss_name_prefix}"
+    computer_name_prefix = "${var.vmss_prefix}-"
     admin_username       = "${var.admin_username}"
     admin_password       = "${var.admin_password}"
   }
@@ -115,11 +121,11 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
   }
 
   network_profile {
-    name    = "${var.hostname}-nic"
+    name    = "${var.vmss_prefix}-nic"
     primary = true
 
     ip_configuration {
-      name                                   = "${var.hostname}ipconfig"
+      name                                   = "${var.vmss_prefix}-ipconfig"
       subnet_id                              = "${azurerm_subnet.subnet.id}"
       load_balancer_backend_address_pool_ids = ["${azurerm_lb_backend_address_pool.backlb.id}"]
       load_balancer_inbound_nat_rules_ids    = ["${element(azurerm_lb_nat_pool.np.*.id, count.index)}"]
@@ -127,10 +133,10 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
   }
 
   storage_profile_os_disk {
-    name           = "${var.hostname}"
+    name           = "${var.vmss_prefix}"
     caching        = "ReadWrite"
     create_option  = "FromImage"
-    vhd_containers = ["${azurerm_storage_account.stor.primary_blob_endpoint}${azurerm_storage_container.vhds.name}"]
+    vhd_containers = ["${azurerm_storage_account.store.primary_blob_endpoint}${azurerm_storage_container.vhds.name}"]
   }
 
   storage_profile_image_reference {
@@ -147,38 +153,90 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     type_handler_version    = "2.0"
     settings                = <<SETTINGS
         {
-          "commandToExecute": "cmd",
+          "commandToExecute": "${var.command}",
           "fileUris": [
-            "https://<storagename>.blob.core.windows.net/<file>",
+            "${var.file1}",
+            "${var.file2}"
           ]
         }
       SETTINGS
   }
 }
 
-
-resource "azurerm_key_vault" "kv" {
+resource "azurerm_template_deployment" "access_policy" {
+  name                = "set_KV_access_policy"
+  resource_group_name = "${var.key_vault_resource_group_name}"
+  deployment_mode     = "Incremental"
   depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
-  name                = "<KV name>"
-  location            = "${var.location}"
-  resource_group_name = "<KV RG>"
 
-  sku {
-    name = "standard"
-  }
+  template_body = <<DEPLOY
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "name": "${var.key_vault_name}",
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2016-10-01",
+      "location": "${var.key_vault_location}",
+      "resourceGroup": ${var.key_vault_resource_group_name}
+      "tags": {},
 
-  tenant_id = "${var.tenant_id}"
-
-  access_policy {
-    tenant_id = "${var.tenant_id}"
-    object_id = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
-
-    key_permissions = [
       
-    ]
-    
-    secret_permissions = [
-      "get",
-    ]
-  }
+      "properties": {
+        "enabledForDeployment": true,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": true,
+        "enableSoftDelete": true,
+        "createMode": "incremental",
+
+        "tenantId": "${var.key_vault_tenant_id}",
+
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "accessPolicies": [
+          {
+            "tenantId": "${var.key_vault_tenant_id}",
+            "objectId": "${var.key_vault_client_id}"
+            "applicationId": "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}",
+            "permissions": {
+              "secrets": [
+                "get"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
 }
+DEPLOY
+}
+
+// resource "azurerm_key_vault" "kv" {
+//   provider            = "azurerm.key_vault_subscription"
+//   depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
+//   name                = "${var.key_vault_name}"
+//   location            = "${var.key_vault_location}"
+//   resource_group_name = "${var.key_vault_resource_group_name}"
+//   tenant_id           = "${var.key_vault_tenant_id}"
+
+//   sku {
+//     name = "standard"
+//   }
+
+//   access_policy {
+//     tenant_id = "${var.key_vault_tenant_id}"
+//     object_id = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
+
+//     key_permissions = [
+      
+//     ]
+    
+//     secret_permissions = [
+//       "get",
+//     ]
+//   }
+// }
