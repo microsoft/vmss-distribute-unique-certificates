@@ -1,3 +1,3 @@
-output "hostname" {
-  value = "${var.vmss_name_prefix}"
+output "VMSS SPN" {
+  value = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
 }
