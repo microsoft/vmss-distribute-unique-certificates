@@ -9,55 +9,55 @@
 # Use this same value as the client_id in scripts/config.py (used by cert Generator)
 variable "client_id" {
   description = "Application ID value from an Active Directory App Registration."
-  default = "8e20cb41-7be7-4491-bcdf-ec69b9923cd0"
+  default = ""
 }
 
 variable "client_secret" {
   description = "Secret value obtained by creating a key for the App Registration."
-  default = "GMRZ8IZFqnX00wVUsk9hoiGRirLF/sm9U+GiYhsu4YY="
+  default = ""
 }
 
 variable "tenant_id" {
   description = "Active Directory 'Directory ID' property."
-  default = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+  default = ""
 }
 
 ###############################################################################
 # Key Vault Variables
 ###############################################################################
 variable "key_vault_subscription_id" {
-  default = "b9039980-7a20-4eb7-bd14-2f03195ebdc1"
+  default = ""
 }
 
 variable "key_vault_resource_group_name" {
   description = "The name of the resource group in which to create the virtual network."
-  default = "bac-certificates"
+  default = ""
 }
 
 variable "key_vault_location" {
   description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
-  default     = "west us 2"
+  default     = ""
 }
 
 variable "key_vault_name" {
-  default = "backeyvault"
+  default = ""
 }
 
 ###############################################################################
 # Scale Set Variables
 ###############################################################################
 variable "subscription_id" {
-  default = "71e74b5f-5ba1-4bfc-be64-7a1ed30ccb26"
+  default = ""
 }
 
 variable "resource_group_name" {
   description = "The name of the resource group in which to create the virtual network."
-  default = "vmsscertificates"
+  default = ""
 }
 
 variable "location" {
   description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
-  default     = "west us 2"
+  default     = ""
 }
 
 variable "storage_account_tier" {
@@ -71,7 +71,7 @@ variable "storage_replication_type" {
 }
 
 variable "vmss_prefix" {
-  default = "vmss-certs"
+  default = ""
 }
 
 variable "vm_sku" {
@@ -102,9 +102,21 @@ variable "instance_count" {
 }
 
 variable "admin_username" {
-  default = "jeff"
+  default = ""
 }
 
 variable "admin_password" {
-  default = "W00fdawg!!"
+  default = ""
+}
+
+variable "command" {
+  default = "bash bootstrap.sh"
+}
+
+variable "file1" {
+  default = "https://<storage_name>.blob.core.windows.net/vm-scripts-files/bootstrap.sh"
+}
+
+variable "file2" {
+  default = "https://<storage_name>.blob.core.windows.net/vm-scripts-files/vm_scripts.tar.gz"
 }
