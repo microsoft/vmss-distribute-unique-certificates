@@ -5,6 +5,14 @@ provider "azurerm" {
   tenant_id       = "${var.tenant_id}"
 }
     
+provider "azurerm" {
+  alias           = "key_vault_subscription"
+  subscription_id = "${var.key_vault_subscription_id}"
+  client_id       = "${var.client_id}"
+  client_secret   = "${var.client_secret}"
+  tenant_id       = "${var.tenant_id}"
+}
+    
 resource "azurerm_resource_group" "rg" {
   name     = "${var.resource_group_name}"
   location = "${var.location}"
@@ -163,22 +171,46 @@ resource "azurerm_key_vault" "kv" {
   location            = "${var.location}"
   resource_group_name = "<KV RG>"
 
-  sku {
-    name = "standard"
-  }
+  template_body = <<DEPLOY
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "name": "${var.key_vault_name}",
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2016-10-01",
+      "location": "${var.key_vault_location}",
+      "tags": {},
 
-  tenant_id = "${var.tenant_id}"
+      "properties": {
+        "enabledForDeployment": true,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": true,
+        "createMode": "incremental",
 
-  access_policy {
-    tenant_id = "${var.tenant_id}"
-    object_id = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
+        "tenantId": "${var.tenant_id}",
 
-    key_permissions = [
-      
-    ]
+        "sku":{
+          "family": "A",
+          "name": "standard"
+        },
 
-    secret_permissions = [
-      "get",
-    ]
-  }
+        "accessPolicies": [
+          {
+            "tenantId": "${var.tenant_id}",
+            "objectId": "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}",
+            "applicationId": "${var.client_id}",
+            "permissions": {
+              "secrets": [
+                "get"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+DEPLOY
 }
