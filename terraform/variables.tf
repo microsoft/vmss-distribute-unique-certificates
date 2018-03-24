@@ -1,61 +1,69 @@
 # Kay Vault Variables
 variable "key_vault_name" {
-  default = "bacKV"
+  default = ""
 }
 
 variable "key_vault_subscription_id" {
-  default = "71e74b5f-5ba1-4bfc-be64-7a1ed30ccb26"
+  default = ""
 }
 
+# Use this same value for the client ID in scripts/configy.py
+# Add this application to the Key Vault subscription IAM with permission to create resources
 variable "key_vault_client_id" {
-  default = "8e20cb41-7be7-4491-bcdf-ec69b9923cd0"
+  description = "Application ID value from an Active Directory App Registration."
+  default = ""
 }
 
+# Use this same value for the secret ID in scripts/configy.py
 variable "key_vault_client_secret" {
-  default = "GMRZ8IZFqnX00wVUsk9hoiGRirLF/sm9U+GiYhsu4YY="
+  description = "Secret value obtained by creating a key for the App Registration."
+  default = ""
 }
 
 variable "key_vault_tenant_id" {
   description = "Active Directory 'Directory ID' property."
-  default = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+  default = ""
 }
 
 variable "key_vault_resource_group_name" {
   description = "The name of the resource group in which to create the virtual network."
-  default = "bac-certificates-rg"
+  default = ""
 }
 
 variable "key_vault_location" {
   description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
-  default     = "west us 2"
+  default     = ""
 }
 
 # Scale Set Variables
 variable "subscription_id" {
-  default = "71e74b5f-5ba1-4bfc-be64-7a1ed30ccb26"
+  default = ""
 }
 
+# Add this application to the Key Vault subscription IAM with permission to create resources
 variable "client_id" {
-  default = "8e20cb41-7be7-4491-bcdf-ec69b9923cd0"
+  description = "Application ID value from an Active Directory App Registration."
+  default = ""
 }
 
 variable "client_secret" {
+  description = "Secret value obtained by creating a key for the App Registration."
   default = "GMRZ8IZFqnX00wVUsk9hoiGRirLF/sm9U+GiYhsu4YY="
 }
 
 variable "tenant_id" {
   description = "Active Directory 'Directory ID' property."
-  default = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+  default = ""
 }
 
 variable "resource_group_name" {
   description = "The name of the resource group in which to create the virtual network."
-  default = "vmsscertificates"
+  default = ""
 }
 
 variable "location" {
   description = "The location/region where the virtual network is created. Changing this forces a new resource to be created."
-  default     = "west us 2"
+  default     = ""
 }
 
 variable "storage_account_tier" {
@@ -69,7 +77,7 @@ variable "storage_replication_type" {
 }
 
 variable "vmss_prefix" {
-  default = "vmss-certs"
+  default = ""
 }
 
 variable "vm_sku" {
@@ -96,11 +104,11 @@ variable "instance_count" {
 }
 
 variable "admin_username" {
-  default = "jeff"
+  default = ""
 }
 
 variable "admin_password" {
-  default = "W00fdawg!!"
+  default = ""
 }
 
 variable "command" {
