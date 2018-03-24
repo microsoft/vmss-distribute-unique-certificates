@@ -1,10 +1,10 @@
 [
-    {"vmName": "vm000000"},
-    {"vmName": "vm000001"},
-    {"vmName": "vm000002"},
-    {"vmName": "vm000003"},
-    {"vmName": "vm000004"},
-    {"vmName": "vm000005"},
-    {"vmName": "vm000006"},
-    {"vmName": "vm000007"}
+    {"vmName": "vmss-certs-000000"},
+    {"vmName": "vmss-certs-000001"},
+    {"vmName": "vmss-certs-000002"},
+    {"vmName": "vmss-certs-000003"},
+    {"vmName": "vmss-certs-000004"},
+    {"vmName": "vmss-certs-000005"},
+    {"vmName": "vmss-certs-000006"},
+    {"vmName": "vmss-certs-000007"}
 ]
