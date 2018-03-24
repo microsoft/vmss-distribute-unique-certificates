@@ -163,7 +163,18 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
   }
 }
 
+# IMPLEMENTATION NOTE: The Terraform AzureRM provider does not currently support access policies
+# as resources. While you can specify an access policy as part of a Key Vault resource definition,
+# destroying the resource deletes the entire Key Vault, which must not happen. We work around 
+# this issue by using an ARM template to define the access policy. During a destroy, Terraform 
+# deletes the ARM template, but that has no impact on the underlying resources created by the ARM
+# template. 
+#
+# A "proper" solution is to implement access policies as first-class resources in the AzureRM 
+# Terraform provider. This work-around is fine for now, however.
+
 resource "azurerm_template_deployment" "access_policy" {
+  provider            = "azurerm.key_vault_subscription"
   name                = "set_KV_access_policy"
   resource_group_name = "${var.key_vault_resource_group_name}"
   deployment_mode     = "Incremental"
@@ -179,28 +190,26 @@ resource "azurerm_template_deployment" "access_policy" {
       "type": "Microsoft.KeyVault/vaults",
       "apiVersion": "2016-10-01",
       "location": "${var.key_vault_location}",
-      "resourceGroup": ${var.key_vault_resource_group_name}
       "tags": {},
 
-      
       "properties": {
         "enabledForDeployment": true,
         "enabledForDiskEncryption": false,
         "enabledForTemplateDeployment": true,
-        "enableSoftDelete": true,
         "createMode": "incremental",
 
         "tenantId": "${var.key_vault_tenant_id}",
 
-        "sku": {
+        "sku":{
           "family": "A",
           "name": "standard"
         },
+
         "accessPolicies": [
           {
             "tenantId": "${var.key_vault_tenant_id}",
-            "objectId": "${var.key_vault_client_id}"
-            "applicationId": "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}",
+            "objectId": "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}",
+            "applicationId": "${var.key_vault_client_id}",
             "permissions": {
               "secrets": [
                 "get"
@@ -214,29 +223,3 @@ resource "azurerm_template_deployment" "access_policy" {
 }
 DEPLOY
 }
-
-// resource "azurerm_key_vault" "kv" {
-//   provider            = "azurerm.key_vault_subscription"
-//   depends_on          = ["azurerm_virtual_machine_scale_set.scaleset"]
-//   name                = "${var.key_vault_name}"
-//   location            = "${var.key_vault_location}"
-//   resource_group_name = "${var.key_vault_resource_group_name}"
-//   tenant_id           = "${var.key_vault_tenant_id}"
-
-//   sku {
-//     name = "standard"
-//   }
-
-//   access_policy {
-//     tenant_id = "${var.key_vault_tenant_id}"
-//     object_id = "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}"
-
-//     key_permissions = [
-      
-//     ]
-    
-//     secret_permissions = [
-//       "get",
-//     ]
-//   }
-// }
