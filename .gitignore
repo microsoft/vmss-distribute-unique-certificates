@@ -150,3 +150,6 @@ Generated\ Files/
 # NUNIT
 *.VisualState.xml
 TestResult.xml
+
+# .bak files
+*.bak
