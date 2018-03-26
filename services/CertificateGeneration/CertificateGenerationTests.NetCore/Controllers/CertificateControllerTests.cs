@@ -34,7 +34,7 @@ namespace CertificateGenerationTests.Controllers
             var certificatesWrapperMock = new Mock<ICertificatesWrapper>();
 
             certificatesWrapperMock
-                .Setup(certificatesWrapper => certificatesWrapper.GenerateCertificate(It.IsAny<string>(), It.IsAny<X509Certificate2>(), It.IsAny<int>()))
+                .Setup(certificatesWrapper => certificatesWrapper.GenerateCertificate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<X509Certificate2>(), It.IsAny<int>()))
                 .Returns(new X509Certificate2());
 
             certificatesWrapperMock
@@ -84,6 +84,7 @@ namespace CertificateGenerationTests.Controllers
                 CertificatesProperties = new CertificateProperties[] {new CertificateProperties()
                 {
                     CertificateName = "name",
+                    ValidDays = 1,
                     SecretName = "name",
                     SubjectName = "name"
                 }}
@@ -134,6 +135,7 @@ namespace CertificateGenerationTests.Controllers
                 CertificatesProperties = new CertificateProperties[] {new CertificateProperties()
                 {
                     CertificateName = "",
+                    ValidDays = 1,
                     SecretName = "",
                     SubjectName = ""
                 }}

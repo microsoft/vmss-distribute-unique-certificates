@@ -18,7 +18,7 @@ namespace CertificateGenerationTests.Wrappers
             var certificatesWrapper = new CertificatesWrapper();
 
             // act
-            var cert = certificatesWrapper.GenerateCertificate("CN=microsoft");
+            var cert = certificatesWrapper.GenerateCertificate("CN=microsoft", 1);
 
             // assert
             Assert.IsNotNull(cert);
@@ -31,7 +31,7 @@ namespace CertificateGenerationTests.Wrappers
             var certificatesWrapper = new CertificatesWrapper();
 
             // act
-            var cert = certificatesWrapper.GenerateCertificate("CN=microsoft", null, 1024);
+            var cert = certificatesWrapper.GenerateCertificate("CN=microsoft", 1, null, 1024);
 
             // assert
             Assert.IsNotNull(cert);
@@ -44,7 +44,7 @@ namespace CertificateGenerationTests.Wrappers
             var certificatesWrapper = new CertificatesWrapper();
 
             // act and assert
-            Assert.ThrowsException<ArgumentException>(() => certificatesWrapper.GenerateCertificate("www.microsoft.com"));
+            Assert.ThrowsException<ArgumentException>(() => certificatesWrapper.GenerateCertificate("www.microsoft.com", 1));
         }
 
         [TestMethod()]
@@ -54,7 +54,7 @@ namespace CertificateGenerationTests.Wrappers
             var certificatesWrapper = new CertificatesWrapper();
 
             // act and assert
-            Assert.ThrowsException<ArithmeticException>(() => certificatesWrapper.GenerateCertificate("CN=microsoft", null, 2));
+            Assert.ThrowsException<ArithmeticException>(() => certificatesWrapper.GenerateCertificate("CN=microsoft", 1, null, 2));
         }
     }
 }
