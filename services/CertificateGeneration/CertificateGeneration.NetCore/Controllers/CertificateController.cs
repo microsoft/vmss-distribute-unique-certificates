@@ -11,6 +11,7 @@ namespace CertificateGeneration.Controllers
     public class CertificateProperties
     {
         public string SubjectName { get; set; }
+        public int ValidDays { get; set; }
         public string CertificateName { get; set; }
         public string SecretName { get; set; }
     }
@@ -87,7 +88,7 @@ namespace CertificateGeneration.Controllers
             var result = new ResultJson();
             try
             {
-                var x = CertificatesWrapper.GenerateCertificate(properties.SubjectName, issuerX509);
+                var x = CertificatesWrapper.GenerateCertificate(properties.SubjectName, properties.ValidDays, issuerX509);
                 result.pfx = CertificatesWrapper.ExportToPfx(x);
 
                 if (properties.CertificateName != "")
