@@ -34,7 +34,7 @@ namespace CertificateGenerationTests.Controllers
             var certificatesWrapperMock = new Mock<ICertificatesWrapper>();
 
             certificatesWrapperMock
-                .Setup(certificatesWrapper => certificatesWrapper.GenerateCertificate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<X509Certificate2>(), It.IsAny<int>()))
+                .Setup(certificatesWrapper => certificatesWrapper.GenerateCertificate(It.IsAny<CertificateProperties>(), It.IsAny<X509Certificate2>()))
                 .Returns(new X509Certificate2());
 
             certificatesWrapperMock
@@ -57,12 +57,16 @@ namespace CertificateGenerationTests.Controllers
             {
                 IssuerBase64Pfx = "",
                 VaultBaseUrl = "http://microsoft.com",
-                CertificatesProperties = new CertificateProperties[] {new CertificateProperties()
-                {
-                    CertificateName = "name",
-                    SecretName = "name",
-                    SubjectName = "name"
-                }}
+                RequestsProperties = new CertificateRequestProperties[] {
+                    new CertificateRequestProperties(){
+                        KeyVaultCertificateName = "test",
+                        KeyVaultSecretName = "test",
+                        CertificateProperties = new CertificateProperties(){
+                            SubjectName = "name",
+                            ValidDays = 2
+                        }
+                    }
+                }
             };
 
             // act
@@ -81,13 +85,16 @@ namespace CertificateGenerationTests.Controllers
             {
                 IssuerBase64Pfx = null,
                 VaultBaseUrl = "http://microsoft.com",
-                CertificatesProperties = new CertificateProperties[] {new CertificateProperties()
-                {
-                    CertificateName = "name",
-                    ValidDays = 1,
-                    SecretName = "name",
-                    SubjectName = "name"
-                }}
+                RequestsProperties = new CertificateRequestProperties[] {
+                    new CertificateRequestProperties(){
+                        KeyVaultCertificateName = "test",
+                        KeyVaultSecretName = "test",
+                        CertificateProperties = new CertificateProperties(){
+                            SubjectName = "name",
+                            ValidDays = 2
+                        }
+                    }
+                }
             };
 
             // act
@@ -132,13 +139,16 @@ namespace CertificateGenerationTests.Controllers
             {
                 IssuerBase64Pfx = "hello bob",
                 VaultBaseUrl = "http://microsoft.com",
-                CertificatesProperties = new CertificateProperties[] {new CertificateProperties()
-                {
-                    CertificateName = "",
-                    ValidDays = 1,
-                    SecretName = "",
-                    SubjectName = ""
-                }}
+                RequestsProperties = new CertificateRequestProperties[] {
+                    new CertificateRequestProperties(){
+                        KeyVaultCertificateName = "test",
+                        KeyVaultSecretName = "test",
+                        CertificateProperties = new CertificateProperties(){
+                            SubjectName = "name",
+                            ValidDays = 2
+                        }
+                    }
+                }
             };
 
             // act

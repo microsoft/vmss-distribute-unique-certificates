@@ -8,17 +8,16 @@ using CertificateGeneration.Wrappers;
 
 namespace CertificateGeneration.Controllers
 {
-    public class CertificateProperties
+    public class CertificateRequestProperties
     {
-        public string SubjectName { get; set; }
-        public int ValidDays { get; set; }
-        public string CertificateName { get; set; }
-        public string SecretName { get; set; }
+        public CertificateProperties CertificateProperties { get; set; }
+        public string KeyVaultCertificateName { get; set; }
+        public string KeyVaultSecretName { get; set; }
     }
 
     public class CertificatesRequest
     {
-        public CertificateProperties[] CertificatesProperties { get; set; }
+        public CertificateRequestProperties[] RequestsProperties { get; set; }
         public string IssuerBase64Pfx { get; set; }
         public string VaultBaseUrl { get; set; }
     }
@@ -46,8 +45,8 @@ namespace CertificateGeneration.Controllers
         {
             // validate that we received a valid CertificatesRequest request body
             if (string.IsNullOrWhiteSpace(request?.VaultBaseUrl) 
-                || request.CertificatesProperties == null 
-                || request.CertificatesProperties.Length == 0)
+                || request.RequestsProperties == null 
+                || request.RequestsProperties.Length == 0)
             {
                 return BadRequest();
             }
@@ -60,9 +59,9 @@ namespace CertificateGeneration.Controllers
                     : null;
 
                 var tasks = new List<Task<ResultJson>>();
-                foreach (var properties in request.CertificatesProperties)
+                foreach (var requestProperties in request.RequestsProperties)
                 {
-                    tasks.Add(GenerateCertificateAsync(properties, request.VaultBaseUrl, issuerX509));
+                    tasks.Add(GenerateCertificateAsync(requestProperties, request.VaultBaseUrl, issuerX509));
                 }
 
                 await Task.WhenAll(tasks);
@@ -83,22 +82,22 @@ namespace CertificateGeneration.Controllers
             }
         }
 
-        private async Task<ResultJson> GenerateCertificateAsync(CertificateProperties properties, string vaultBaseUrl, X509Certificate2 issuerX509)
+        private async Task<ResultJson> GenerateCertificateAsync(CertificateRequestProperties properties, string vaultBaseUrl, X509Certificate2 issuerX509)
         {
             var result = new ResultJson();
             try
             {
-                var x = CertificatesWrapper.GenerateCertificate(properties.SubjectName, properties.ValidDays, issuerX509);
+                var x = CertificatesWrapper.GenerateCertificate(properties.CertificateProperties, issuerX509);
                 result.pfx = CertificatesWrapper.ExportToPfx(x);
 
-                if (properties.CertificateName != "")
+                if (properties.KeyVaultCertificateName != "")
                 {
-                    await KvWrapper.UploadPfx(vaultBaseUrl, properties.CertificateName, result.pfx);
+                    await KvWrapper.UploadPfx(vaultBaseUrl, properties.KeyVaultCertificateName, result.pfx);
                 }
 
-                if (properties.SecretName != "")
+                if (properties.KeyVaultSecretName != "")
                 {
-                    await KvWrapper.UploadPem(vaultBaseUrl, properties.SecretName, CertificatesWrapper.ExportToPEM(x));
+                    await KvWrapper.UploadPem(vaultBaseUrl, properties.KeyVaultSecretName, CertificatesWrapper.ExportToPEM(x));
                 }
 
                 result.result = "Success";

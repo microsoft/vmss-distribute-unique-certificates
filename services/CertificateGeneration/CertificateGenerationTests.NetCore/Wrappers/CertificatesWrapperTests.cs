@@ -16,9 +16,14 @@ namespace CertificateGenerationTests.Wrappers
         {
             // arrange
             var certificatesWrapper = new CertificatesWrapper();
+            CertificateProperties properties = new CertificateProperties
+            {
+                SubjectName = "CN=microsoft",
+                ValidDays = 1
+            };
 
             // act
-            var cert = certificatesWrapper.GenerateCertificate("CN=microsoft", 1);
+            var cert = certificatesWrapper.GenerateCertificate(properties);
 
             // assert
             Assert.IsNotNull(cert);
@@ -29,9 +34,15 @@ namespace CertificateGenerationTests.Wrappers
         {
             // arrange
             var certificatesWrapper = new CertificatesWrapper();
+            CertificateProperties properties = new CertificateProperties
+            {
+                SubjectName = "CN=microsoft",
+                ValidDays = 1,
+                KeyStrength = 1024
+            };
 
             // act
-            var cert = certificatesWrapper.GenerateCertificate("CN=microsoft", 1, null, 1024);
+            var cert = certificatesWrapper.GenerateCertificate(properties, null);
 
             // assert
             Assert.IsNotNull(cert);
@@ -42,9 +53,14 @@ namespace CertificateGenerationTests.Wrappers
         {
             // arrange
             var certificatesWrapper = new CertificatesWrapper();
+            CertificateProperties properties = new CertificateProperties
+            {
+                SubjectName = "www.microsoft.com",
+                ValidDays = 1
+            };
 
             // act and assert
-            Assert.ThrowsException<ArgumentException>(() => certificatesWrapper.GenerateCertificate("www.microsoft.com", 1));
+            Assert.ThrowsException<ArgumentException>(() => certificatesWrapper.GenerateCertificate(properties));
         }
 
         [TestMethod()]
@@ -52,9 +68,15 @@ namespace CertificateGenerationTests.Wrappers
         {
             // arrange
             var certificatesWrapper = new CertificatesWrapper();
+            CertificateProperties properties = new CertificateProperties
+            {
+                SubjectName = "CN=microsoft",
+                ValidDays = 1,
+                KeyStrength = 2
+            };
 
             // act and assert
-            Assert.ThrowsException<ArithmeticException>(() => certificatesWrapper.GenerateCertificate("CN=microsoft", 1, null, 2));
+            Assert.ThrowsException<ArithmeticException>(() => certificatesWrapper.GenerateCertificate(properties, null));
         }
     }
 }

@@ -5,34 +5,50 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace CertificateGeneration.Wrappers
 {
+    public class CertificateProperties
+    {
+        public string SubjectName { get; set; }
+        public int ValidDays { get; set; }
+        public bool BasicConstraintCertificateAuthority { get; set; } = false;
+        public bool BasicConstraintHasPathLengthConstraint { get; set; } = false;
+        public int BasicConstraintPathLengthConstraint { get; set; } = 0;
+        public bool BasicConstraintCritical { get; set; } = false;
+        public int KeyStrength { get; set; } = 2048;
+    }
+
     public interface ICertificatesWrapper
     {
-        X509Certificate2 GenerateCertificate(string subjectName, int validDays, X509Certificate2 ca = null, int keyStrength = 2048);
+        X509Certificate2 GenerateCertificate(CertificateProperties properties, X509Certificate2 ca = null);
         string ExportToPEM(X509Certificate2 cert);
         string ExportToPfx(X509Certificate2 cert);
     }
 
     public class CertificatesWrapper : ICertificatesWrapper
     {
-        public X509Certificate2 GenerateCertificate(string subjectName, int validDays, X509Certificate2 ca = null, int keyStrength = 2048)
+        public X509Certificate2 GenerateCertificate(CertificateProperties properties, X509Certificate2 ca = null)
         {
             var random = new Random(DateTime.Now.Millisecond);
-            RSA key = RSA.Create(keyStrength);
+            RSA key = RSA.Create(properties.KeyStrength);
             CertificateRequest req = new CertificateRequest(
-                subjectName,
+                properties.SubjectName,
                 key,
                 HashAlgorithmName.SHA256,
                 RSASignaturePadding.Pkcs1);
+
+            var notBefore = DateTime.UtcNow;
+            var notAfter = notBefore.AddDays(properties.ValidDays);
+
+            req.CertificateExtensions.Add(new X509BasicConstraintsExtension(properties.BasicConstraintCertificateAuthority,
+                                                                            properties.BasicConstraintHasPathLengthConstraint,
+                                                                            properties.BasicConstraintPathLengthConstraint,
+                                                                            properties.BasicConstraintCritical));
+            req.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(req.PublicKey, false));
             if (ca == null)
             {
-                req.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
-                req.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(req.PublicKey, false));
-                return req.CreateSelfSigned(DateTimeOffset.UtcNow, DateTime.UtcNow.Date.AddDays(validDays));
+                return req.CreateSelfSigned(notBefore, notAfter);
             }
             else
             {
-                var notBefore = DateTime.UtcNow;
-                var notAfter = notBefore.AddDays(validDays);
                 var serialNumber = new byte[4];
                 random.NextBytes(serialNumber);
 
