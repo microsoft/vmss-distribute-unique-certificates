@@ -209,7 +209,6 @@ resource "azurerm_template_deployment" "access_policy" {
           {
             "tenantId": "${var.tenant_id}",
             "objectId": "${lookup(azurerm_virtual_machine_scale_set.scaleset.identity[0], "principal_id")}",
-            "applicationId": "${var.client_id}",
             "permissions": {
               "secrets": [
                 "get"
