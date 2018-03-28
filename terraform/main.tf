@@ -192,7 +192,7 @@ resource "azurerm_template_deployment" "access_policy" {
       "properties": {
         "enabledForDeployment": true,
         "enabledForDiskEncryption": false,
-        "enabledForTemplateDeployyesment": true,
+        "enabledForTemplateDeployment": true,
         "createMode": "incremental",
 
         "tenantId": "${var.tenant_id}",
