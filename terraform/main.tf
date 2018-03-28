@@ -154,10 +154,7 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     settings                = <<SETTINGS
         {
           "commandToExecute": "${var.command}",
-          "fileUris": [
-            "${var.file1}",
-            "${var.file2}"
-          ]
+          "fileUris": ["${join(",", var.files)}"]
         }
       SETTINGS
   }
@@ -195,7 +192,7 @@ resource "azurerm_template_deployment" "access_policy" {
       "properties": {
         "enabledForDeployment": true,
         "enabledForDiskEncryption": false,
-        "enabledForTemplateDeployment": true,
+        "enabledForTemplateDeployyesment": true,
         "createMode": "incremental",
 
         "tenantId": "${var.tenant_id}",
