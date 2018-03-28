@@ -113,10 +113,10 @@ variable "command" {
   default = "bash bootstrap.sh"
 }
 
-variable "file1" {
-  default = "https://<storage_name>.blob.core.windows.net/vm-scripts-files/bootstrap.sh"
-}
-
-variable "file2" {
-  default = "https://<storage_name>.blob.core.windows.net/vm-scripts-files/vm_scripts.tar.gz"
+variable "files" {
+  type = "list"
+  default = [
+    "<file1>",
+    "<file2>"
+  ]
 }
