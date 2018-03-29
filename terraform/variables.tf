@@ -113,9 +113,11 @@ variable "command" {
   default = "bash bootstrap.sh"
 }
 
+variable "files" {
   default = <<EOF
   [
     "<file1>",
     "<file2>"
   ]
   EOF
+}
