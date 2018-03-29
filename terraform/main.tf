@@ -154,10 +154,7 @@ resource "azurerm_virtual_machine_scale_set" "scaleset" {
     settings                = <<SETTINGS
         {
           "commandToExecute": "${var.command}",
-          "fileUris": [
-            "${var.file1}",
-            "${var.file2}"
-          ]
+          "fileUris": ${var.files}
         }
       SETTINGS
   }
