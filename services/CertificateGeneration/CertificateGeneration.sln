@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertificateGeneration", "CertificateGeneration\CertificateGeneration.csproj", "{E16DE1B0-4DB1-4E19-A56C-54AFE04C77AE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertificateGenerationTests", "CertificateGenerationTests\CertificateGenerationTests.csproj", "{E4FB2518-12A2-4F76-8CAF-9DD9A525F90A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertificateGeneration.NetCore", "CertificateGeneration.NetCore\CertificateGeneration.NetCore.csproj", "{B31ECF7D-DCFE-4665-83D9-47DA97E8449B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CertificateGenerationTests.NetCore", "CertificateGenerationTests.NetCore\CertificateGenerationTests.NetCore.csproj", "{C7B134BC-B46F-4C60-A206-F6F7F065D07F}"
@@ -17,14 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E16DE1B0-4DB1-4E19-A56C-54AFE04C77AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E16DE1B0-4DB1-4E19-A56C-54AFE04C77AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E16DE1B0-4DB1-4E19-A56C-54AFE04C77AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E16DE1B0-4DB1-4E19-A56C-54AFE04C77AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4FB2518-12A2-4F76-8CAF-9DD9A525F90A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4FB2518-12A2-4F76-8CAF-9DD9A525F90A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4FB2518-12A2-4F76-8CAF-9DD9A525F90A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4FB2518-12A2-4F76-8CAF-9DD9A525F90A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B31ECF7D-DCFE-4665-83D9-47DA97E8449B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B31ECF7D-DCFE-4665-83D9-47DA97E8449B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B31ECF7D-DCFE-4665-83D9-47DA97E8449B}.Release|Any CPU.ActiveCfg = Release|Any CPU

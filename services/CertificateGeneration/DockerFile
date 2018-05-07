@@ -1,0 +1,17 @@
+FROM microsoft/dotnet:2.0-sdk AS build
+WORKDIR /app
+
+COPY *.sln .
+COPY CertificateGeneration.NetCore/*.csproj ./CertificateGeneration.NetCore/
+COPY CertificateGenerationTests.NetCore/*.csproj ./CertificateGenerationTests.NetCore/
+
+RUN dotnet restore
+
+COPY CertificateGeneration.NetCore/. ./CertificateGeneration.NetCore/
+COPY CertificateGenerationTests.NetCore/. ./CertificateGenerationTests.NetCore/
+
+RUN dotnet build --configuration release
+
+ENV ASPNETCORE_URLS "http://0.0.0.0:5000"
+
+ENTRYPOINT ["dotnet", "/app/CertificateGeneration.NetCore/bin/Release/netcoreapp2.0/CertificateGeneration.NetCore.dll"]
