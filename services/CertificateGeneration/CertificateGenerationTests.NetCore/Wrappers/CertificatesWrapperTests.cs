@@ -1,10 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CertificateGeneration.Wrappers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 namespace CertificateGenerationTests.Wrappers
 {
@@ -60,11 +58,29 @@ namespace CertificateGenerationTests.Wrappers
             };
 
             // act and assert
-            Assert.ThrowsException<ArgumentException>(() => certificatesWrapper.GenerateCertificate(properties));
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // When runs on Windows, it throws different exception.
+                try
+                {
+                    certificatesWrapper.GenerateCertificate(properties);
+                }
+                catch (Exception e)
+                {
+                    Assert.AreEqual("The string contains an invalid X500 name attribute key, oid, value or delimiter", e.Message);
+                    return;
+                }
+                // Exception was expected.
+                Assert.Fail();
+            }
+            else
+            {
+                Assert.ThrowsException<CryptographicException>(() => certificatesWrapper.GenerateCertificate(properties));
+            }
         }
 
         [TestMethod()]
-        public void GenerateCertificateTest_InValidKeyStrengthThrowsException()
+        public void GenerateCertificateTest_InvalidKeyStrengthThrowsException()
         {
             // arrange
             var certificatesWrapper = new CertificatesWrapper();
@@ -76,7 +92,7 @@ namespace CertificateGenerationTests.Wrappers
             };
 
             // act and assert
-            Assert.ThrowsException<ArithmeticException>(() => certificatesWrapper.GenerateCertificate(properties, null));
+            Assert.ThrowsException<CryptographicException>(() => certificatesWrapper.GenerateCertificate(properties, null));
         }
     }
 }
