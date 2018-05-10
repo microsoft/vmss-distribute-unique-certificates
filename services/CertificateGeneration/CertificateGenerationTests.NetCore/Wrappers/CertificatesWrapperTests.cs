@@ -67,7 +67,6 @@ namespace CertificateGenerationTests.Wrappers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
                     Assert.AreEqual("The string contains an invalid X500 name attribute key, oid, value or delimiter", e.Message);
                     return;
                 }
